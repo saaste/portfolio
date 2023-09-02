@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  app:
+    container_name: portfolio
+    build:
+      dockerfile: Dockerfile
+      context: .
+    volumes:
+      - ./settings.yaml:/app/settings.yaml
+      - ./files:/app/files
+    ports:
+      - "8000:8000"

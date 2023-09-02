@@ -1,0 +1,8 @@
+smallSize: 200
+mediumSize: 750
+refreshInterval: 10m
+title: Portfolio
+author: Your name
+about: >
+  <p>Write something about yourself here.</p>
+  <p>You can use HTML.</p>

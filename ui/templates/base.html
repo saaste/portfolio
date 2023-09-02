@@ -1,0 +1,28 @@
+{{ define "base" }}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ .Title }}: {{ template "title" . }}</title>
+    <link rel="stylesheet" href="static/reset.css" />
+    <link rel="stylesheet" href="static/style.css" />
+    <link rel="alternate" type="application/atom+xml" title="RSS feed" href="/feed" />
+</head>
+<body>
+    <div id="container">
+        <nav>
+            <h1 class="title"><a href="/">{{ .Title }}</a></h1>
+            <div class="filler"></div>
+             <a href="/about" class="about">About</a>
+        </nav>
+        
+        {{ template "content" .}}
+        
+        <footer id="footer">
+            Copyright &copy; {{ .Author }} {{ .Year }}
+        </footer>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.0.9/index.min.js"></script>
+</body>
+</html>
+{{ end }}

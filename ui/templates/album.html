@@ -1,0 +1,12 @@
+{{ define "title" }}Home{{ end }}
+{{ define "content" }}
+
+<section id="photos">
+{{ range .Photos }}
+    <div class="photo">
+        <a href="photo/{{ .FullFileName }}" data-fslightbox="gallery"><img src="photo/{{ .SmallFileName }}" srcset="photo/{{ .MediumFileName }} {{ $.MediumSize }}w" /></a>
+    </div>
+{{ end}}
+</section>
+
+{{ end }}
