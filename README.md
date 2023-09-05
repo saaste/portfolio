@@ -71,5 +71,11 @@ the app.
 
 Please note that only JPG and PNG formats are supported.
 
+Despite the minimalist design, it is recommended to provide an alt text for the visually impaired. You can do this by saving the text in a .txt file that has the same name as the photo.
+
+For example:
+- Photo: DSCF3408.jpg
+- Alt: DSCF3408.txt
+
 ## Preview
 ![Calendar preview](docs/screenshot.png)

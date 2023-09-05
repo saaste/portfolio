@@ -40,13 +40,16 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 			if !hasThumbnals || forceThumbnails {
 				generateThumbnails(entry.Name(), settings)
 			}
+			altText := getAltText(fullPath)
 			photos = append(photos, Photo{
 				FullFileName:   entry.Name(),
 				MediumFileName: getMediumThumbnailFilename(entry.Name()),
 				SmallFileName:  getSmallThumbnailFilename(entry.Name()),
 				Changed:        fileInfo.ChangeTime(),
+				AltText:        altText,
 			})
-
+		case ".txt":
+			continue
 		default:
 			log.Printf("WARNING: unsupported file type: %s\n", entry.Name())
 		}
@@ -61,4 +64,24 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 	})
 
 	return photos, nil
+}
+
+func getAltText(photoFullPath string) string {
+	photoExt := path.Ext(photoFullPath)
+	altFile := strings.Replace(photoFullPath, photoExt, ".txt", -1)
+
+	_, err := os.Stat(altFile)
+	if err != nil {
+		log.Printf("WARNING: No alt text for %s", photoFullPath)
+		return ""
+	}
+
+	content, err := os.ReadFile(altFile)
+	if err != nil {
+		log.Printf("ERROR: failed to read alt text file %s: %v", altFile, err)
+		return ""
+	}
+
+	return string(content)
+
 }

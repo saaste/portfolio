@@ -9,4 +9,5 @@ type Photo struct {
 	MediumFileName string
 	SmallFileName  string
 	Changed        time.Time
+	AltText        string
 }
