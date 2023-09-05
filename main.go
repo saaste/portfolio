@@ -127,10 +127,16 @@ func fileServer(r chi.Router, path string, root http.FileSystem) {
 	})
 }
 
-func pollPhotos(appSettings *settings.AppSettings) {
-	tick := time.Tick(appSettings.RefreshInterval)
+func pollChanges(as *settings.AppSettings) {
+	tick := time.Tick(as.RefreshInterval)
 	for range tick {
-		p, err := photo.GetPhotos(appSettings, false)
+		s, err := settings.ReadSettings()
+		if err != nil {
+			log.Fatalf("failed to read app settings: %s", err)
+		}
+		appSettings = s
+
+		p, err := photo.GetPhotos(s, false)
 
 		if err != nil {
 			log.Fatalf("failed to get photos: %s", err)
@@ -174,7 +180,7 @@ func main() {
 	fileServer(r, "/photo", http.Dir("files"))
 	fileServer(r, "/static", http.Dir("ui/static"))
 
-	go pollPhotos(appSettings)
+	go pollChanges(appSettings)
 
 	err = http.ListenAndServe(fmt.Sprintf(":%s", *port), r)
 	if errors.Is(err, http.ErrServerClosed) {
