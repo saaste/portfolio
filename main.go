@@ -141,6 +141,7 @@ func pollPhotos(appSettings *settings.AppSettings) {
 
 func main() {
 	generateThumbnails := flag.Bool("generate-thumbnails", false, "Generate all thumbnails")
+	port := flag.String("port", "8000", "Port")
 	flag.Parse()
 
 	s, err := settings.ReadSettings()
@@ -173,7 +174,7 @@ func main() {
 
 	go pollPhotos(appSettings)
 
-	err = http.ListenAndServe(":8000", r)
+	err = http.ListenAndServe(fmt.Sprintf(":%s", *port), r)
 	if errors.Is(err, http.ErrServerClosed) {
 		log.Println("Server closed")
 	} else if err != nil {

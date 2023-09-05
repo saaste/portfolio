@@ -7,6 +7,14 @@ body {
     font-size: 1rem;
 }
 
+a {
+    color: #3ba4ce;
+}
+a:hover {
+    text-shadow: 0px 0px 5px #2b728f;
+}
+
+
 #container {
     max-width: 1200px;
     margin: 0 auto;
@@ -20,17 +28,11 @@ nav {
     align-items: baseline;
     padding: 0.8em;
 }
-
 nav .filler {
     flex-grow: 1;
 }
-
 nav a {
     text-decoration: none;
-    color: #3ba4ce;
-}
-nav a:hover {
-    text-shadow: 0px 0px 5px #2b728f;
 }
 nav .about {
     font-size: 1rem;
@@ -57,7 +59,6 @@ nav .about {
     height: 100%;
     vertical-align: middle;
 }
-
 .photo:hover {
     opacity: 80%;
     

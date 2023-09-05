@@ -8,6 +8,7 @@ This app is build around the file system, eliminating the need for an admin UI. 
 - File based - no databases needed!
 - Automagic thumbnail generation
 - Atom feed
+- Respects light/dark mode set in the browser
 
 ## Setup
 
@@ -35,18 +36,18 @@ breakdown of the settings you can customize:
 | author            | Author of the photos
 | about             | Text for the `About` page. HTML tags are allowed
 
-4. Optionally, you can also customize the templates and CSS files located in the `ui` directory. Keep in
-mind that these files are in the source control.
+4. Optionally, you can add your own styles to `ui/static/custom.css`. You can also customize the templates in the `ui/templates` directory but keep in
+mind that these files are in the source control and can change in the future.
 
 ## How to run
 
 ### Running with Go
 The only requirement is [Go](https://go.dev/). You can start the app with:
 ```
-go run main.go
+go run main.go [--port PORT]
 ```
 
-The app will run on port 8000.
+By default the app will run on port 8000.
 
 ### Running with Docker
 The only requirement is [Docker](https://www.docker.com/). You can start the app with:
