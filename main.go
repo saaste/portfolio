@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"net/http"
@@ -80,7 +81,7 @@ func handleFeed(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	feed := &feeds.Feed{
 		Title:       appSettings.Title,
-		Link:        &feeds.Link{Href: fmt.Sprintf("%s/feed", baseUrl)},
+		Link:        &feeds.Link{Href: fmt.Sprintf("%s/feed", baseUrl), Rel: "self"},
 		Description: appSettings.Title,
 		Author:      &feeds.Author{Name: appSettings.Author},
 		Created:     now,
@@ -89,10 +90,11 @@ func handleFeed(w http.ResponseWriter, r *http.Request) {
 	for _, photo := range photos {
 		feed.Items = append(feed.Items,
 			&feeds.Item{
-				Title:   "Photo",
-				Link:    &feeds.Link{Href: fmt.Sprintf("%s/photo/%s", baseUrl, photo.FullFileName)},
-				Author:  &feeds.Author{Name: appSettings.Author},
-				Created: photo.Changed,
+				Title:       "Photo",
+				Link:        &feeds.Link{Href: fmt.Sprintf("%s/photo/%s", baseUrl, photo.FullFileName)},
+				Author:      &feeds.Author{Name: appSettings.Author},
+				Created:     photo.Changed,
+				Description: html.EscapeString(fmt.Sprintf("<img src=\"%s/photo/%s\" />", baseUrl, photo.SmallFileName)),
 			})
 	}
 
