@@ -30,9 +30,11 @@ breakdown of the settings you can customize:
 | Setting           | Description
 |------------------ | -------------------------------------------------
 | smallSize         | Maximum size for small thumbnails 
-| mediumSize        | Maximum size for medium thumbnails 
+| mediumSize        | Maximum size for medium thumbnails
+| baseUrl           | Base URL
 | refreshInterval   | How often photos are refreshed (e.g 10s, 15m, 1h)
 | title             | Title of the portfolio
+| description       | Description used in [Open Graph](https://ogp.me/) meta tags (social media preview)
 | author            | Author of the photos
 | about             | Text for the `About` page. HTML tags are allowed
 

@@ -3,6 +3,7 @@ package settings
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -17,6 +18,8 @@ func ReadSettings() (*AppSettings, error) {
 	if err := yaml.Unmarshal(data, &appSettings); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal settings.yaml: %v", err)
 	}
+
+	appSettings.BaseURL = strings.TrimSuffix(appSettings.BaseURL, "/")
 
 	return &appSettings, nil
 }

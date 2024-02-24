@@ -8,6 +8,13 @@
     <link rel="stylesheet" href="static/style.css" />
     <link rel="stylesheet" href="static/custom.css" />
     <link rel="alternate" type="application/atom+xml" title="RSS feed" href="/feed" />
+    {{ if and (ne .BaseURL "") (ne .Title "") (gt (len .Photos) 0) }}
+    <meta property="og:title" content="{{ .Title }}" />
+    <meta property="og:description" content="{{ .Description }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ .BaseURL }}" />
+    <meta property="og:image" content="{{ .BaseURL }}/photo/{{ (index .Photos 0).MediumFileName }}" />
+    {{ end }}
 </head>
 <body>
     <div id="container">
