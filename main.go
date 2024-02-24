@@ -27,24 +27,28 @@ var photos []photo.Photo = make([]photo.Photo, 0)
 var appSettings *settings.AppSettings
 
 type TemplateData struct {
-	Photos     []photo.Photo
-	Year       int
-	Title      string
-	Author     string
-	About      template.HTML
-	SmallSize  int
-	MediumSize int
+	Photos      []photo.Photo
+	Year        int
+	Title       string
+	Description string
+	Author      string
+	About       template.HTML
+	SmallSize   int
+	MediumSize  int
+	BaseURL     string
 }
 
 func getTemplateData() TemplateData {
 	return TemplateData{
-		Photos:     photos,
-		Year:       time.Now().Year(),
-		Title:      appSettings.Title,
-		Author:     appSettings.Author,
-		About:      template.HTML(appSettings.About),
-		SmallSize:  appSettings.SmallSize,
-		MediumSize: appSettings.MediumSize,
+		Photos:      photos,
+		Year:        time.Now().Year(),
+		Title:       appSettings.Title,
+		Description: appSettings.Description,
+		Author:      appSettings.Author,
+		About:       template.HTML(appSettings.About),
+		SmallSize:   appSettings.SmallSize,
+		MediumSize:  appSettings.MediumSize,
+		BaseURL:     appSettings.BaseURL,
 	}
 }
 
