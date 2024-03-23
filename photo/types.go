@@ -9,5 +9,11 @@ type Photo struct {
 	MediumFileName string
 	SmallFileName  string
 	Changed        time.Time
-	AltText        string
+	PhotoInfo      PhotoInfo
+}
+
+type PhotoInfo struct {
+	Title       string `yaml:"title,omitempty"`
+	Description string `yaml:"description,omitempty"`
+	AltText     string `yaml:"altText,omitempty"`
 }

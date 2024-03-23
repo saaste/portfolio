@@ -4,9 +4,15 @@
 <section id="photos">
 {{ range .Photos }}
     <div class="photo">
+        {{ if .PhotoInfo.Title }}
+            <p class="title">{{ .PhotoInfo.Title }}</p>
+        {{ end }}
         <a href="photo/{{ .FullFileName }}" data-fslightbox="gallery">
-            <img src="photo/{{ .SmallFileName }}" srcset="photo/{{ .MediumFileName }} {{ $.MediumSize }}w" {{ if .AltText }}alt="{{ .AltText }}"{{ end }} />
+            <img src="photo/{{ .SmallFileName }}" srcset="photo/{{ .MediumFileName }} {{ $.MediumSize }}w" {{ if .PhotoInfo.AltText }}alt="{{ .PhotoInfo.AltText }}"{{ end }} />
         </a>
+        {{ if .PhotoInfo.Description }}
+            <p class="description">{{ .PhotoInfo.Description }}</p>
+        {{ end }}
     </div>
 {{ end}}
 </section>

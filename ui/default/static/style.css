@@ -59,9 +59,31 @@ nav .about {
     height: 100%;
     vertical-align: middle;
 }
+
+.photo .title, .photo .description {
+    position: absolute;
+    padding: 0.5em;
+    background: #000000cc;
+    width: 100%;
+    line-height: 1.5em;
+    opacity: 0%;
+    transition: 0.5s;
+}
+
+.photo .title {
+    top: 0;
+}
+
+.photo .description {
+    bottom: 0;
+}
+
 .photo:hover {
     opacity: 80%;
-    
+}
+
+.photo:hover .title, .photo:hover .description {
+    opacity: 100%;
 }
 
 #about {

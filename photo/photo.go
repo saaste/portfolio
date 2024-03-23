@@ -10,6 +10,7 @@ import (
 
 	"github.com/djherbis/times"
 	"github.com/saaste/portfolio/settings"
+	"gopkg.in/yaml.v3"
 )
 
 func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, error) {
@@ -40,13 +41,13 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 			if !hasThumbnals || forceThumbnails {
 				generateThumbnails(entry.Name(), settings)
 			}
-			altText := getAltText(fullPath)
+			photoInfo := getPhotoInfo(fullPath)
 			photos = append(photos, Photo{
 				FullFileName:   entry.Name(),
 				MediumFileName: getMediumThumbnailFilename(entry.Name()),
 				SmallFileName:  getSmallThumbnailFilename(entry.Name()),
 				Changed:        fileInfo.ChangeTime(),
-				AltText:        altText,
+				PhotoInfo:      photoInfo,
 			})
 		case ".txt":
 			continue
@@ -66,22 +67,23 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 	return photos, nil
 }
 
-func getAltText(photoFullPath string) string {
+func getPhotoInfo(photoFullPath string) PhotoInfo {
+	photoInfo := PhotoInfo{}
+
 	photoExt := path.Ext(photoFullPath)
-	altFile := strings.Replace(photoFullPath, photoExt, ".txt", -1)
+	infoFile := strings.Replace(photoFullPath, photoExt, ".yaml", -1)
 
-	_, err := os.Stat(altFile)
+	data, err := os.ReadFile(infoFile)
 	if err != nil {
-		log.Printf("WARNING: No alt text for %s", photoFullPath)
-		return ""
+		log.Printf("WARNING: failed to read info file %s: %v", infoFile, err)
+		return photoInfo
 	}
 
-	content, err := os.ReadFile(altFile)
-	if err != nil {
-		log.Printf("ERROR: failed to read alt text file %s: %v", altFile, err)
-		return ""
+	if err := yaml.Unmarshal(data, &photoInfo); err != nil {
+		log.Printf("ERROR: failed to unmarshal info file %s: %v", infoFile, err)
+		return photoInfo
 	}
 
-	return string(content)
+	return photoInfo
 
 }
