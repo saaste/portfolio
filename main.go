@@ -65,6 +65,9 @@ func main() {
 	r.Get("/", handler.HandleRoot)
 	r.Get("/about", handler.HandleAbout)
 	r.Get("/feed", handler.HandleFeed)
+	r.Get("/rss.xml", handler.HandleFeed)
+	r.Get("/atom.xml", handler.HandleFeed)
+	r.Get("/feed.json", handler.HandleFeed)
 
 	handler.FileServer(r, "/photo", http.Dir("files"))
 	handler.FileServer(r, "/static", http.Dir("ui/static"))

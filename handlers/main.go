@@ -12,13 +12,15 @@ import (
 )
 
 type TemplateData struct {
-	Photos     []photo.Photo
-	Year       int
-	Title      string
-	Author     string
-	About      template.HTML
-	SmallSize  int
-	MediumSize int
+	Photos      []photo.Photo
+	Year        int
+	Title       string
+	Description string
+	Author      string
+	About       template.HTML
+	SmallSize   int
+	MediumSize  int
+	BaseURL     string
 }
 
 type Handler struct {
@@ -56,12 +58,14 @@ func (h *Handler) parseTemplate(w http.ResponseWriter, templateFile string) {
 
 func (h *Handler) getTemplateData() *TemplateData {
 	return &TemplateData{
-		Photos:     h.photos,
-		Year:       time.Now().Year(),
-		Title:      h.appSettings.Title,
-		Author:     h.appSettings.Author,
-		About:      template.HTML(h.appSettings.About),
-		SmallSize:  h.appSettings.SmallSize,
-		MediumSize: h.appSettings.MediumSize,
+		Photos:      h.photos,
+		Year:        time.Now().Year(),
+		Title:       h.appSettings.Title,
+		Description: h.appSettings.Description,
+		Author:      h.appSettings.Author,
+		About:       template.HTML(h.appSettings.About),
+		SmallSize:   h.appSettings.SmallSize,
+		MediumSize:  h.appSettings.MediumSize,
+		BaseURL:     h.appSettings.BaseURL,
 	}
 }
