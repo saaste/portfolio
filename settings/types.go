@@ -11,4 +11,5 @@ type AppSettings struct {
 	Description     string        `yaml:"description" default:""`
 	Author          string        `yaml:"author"`
 	About           string        `yaml:"about"`
+	Theme           string        `yaml:"theme"`
 }
