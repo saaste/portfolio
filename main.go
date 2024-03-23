@@ -70,7 +70,7 @@ func main() {
 	r.Get("/feed.json", handler.HandleFeed)
 
 	handler.FileServer(r, "/photo", http.Dir("files"))
-	handler.FileServer(r, "/static", http.Dir("ui/static"))
+	handler.FileServer(r, "/static", http.Dir(fmt.Sprintf("ui/%s/static", appSettings.Theme)))
 
 	go pollChanges(handler, appSettings)
 
