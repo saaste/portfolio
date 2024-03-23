@@ -32,12 +32,18 @@ type jsonAuthor struct {
 }
 
 type jsonItem struct {
-	Id            string   `json:"id"`
-	Title         string   `json:"title"`
-	ContentHtml   string   `json:"content_html"`
-	Url           string   `json:"url"`
-	DatePublished string   `json:"date_published"`
-	Tags          []string `json:"tags,omitempty"`
+	Id            string           `json:"id"`
+	Title         string           `json:"title"`
+	ContentHtml   string           `json:"content_html"`
+	Url           string           `json:"url"`
+	DatePublished string           `json:"date_published"`
+	Attachments   []jsonAttachment `json:"attachments,omitempty"`
+}
+
+type jsonAttachment struct {
+	Url      string `json:"url"`
+	MimeType string `json:"mime_type"`
+	Title    string `json:"title"`
 }
 
 func (h *Handler) HandleFeed(w http.ResponseWriter, r *http.Request) {
@@ -71,6 +77,7 @@ func (h *Handler) toRSS(w http.ResponseWriter) {
 	builder = append(builder, fmt.Sprintf(`%s<atom:link href="%s/rss.xml" rel="self" type="application/rss+xml"></atom:link>`, "\t\t", h.appSettings.BaseURL))
 
 	for _, photo := range h.photos {
+		imageUrl := fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.FullFileName)
 		builder = append(builder, "\t\t<item>")
 
 		if photo.PhotoInfo.Title != "" {
@@ -79,11 +86,12 @@ func (h *Handler) toRSS(w http.ResponseWriter) {
 			builder = append(builder, "\t\t\t<title>Photo without title</title>")
 		}
 
-		builder = append(builder, fmt.Sprintf("\t\t\t<link>%s/photo/%s</link>", h.appSettings.BaseURL, photo.FullFileName))
+		builder = append(builder, fmt.Sprintf("\t\t\t<link>%s</link>", imageUrl))
 
-		builder = append(builder, fmt.Sprintf("\t\t\t<description>%s</description>", h.buildDescription(photo)))
+		builder = append(builder, fmt.Sprintf("\t\t\t<description>%s</description>", h.buildDescription(photo, true)))
 		builder = append(builder, fmt.Sprintf("\t\t\t<pubDate>%s</pubDate>", photo.Changed.Format(time.RFC1123Z)))
-		builder = append(builder, fmt.Sprintf("\t\t\t<guid>%s/photo/%s</guid>", h.appSettings.BaseURL, photo.FullFileName))
+		builder = append(builder, fmt.Sprintf("\t\t\t<guid>%s</guid>", imageUrl))
+		builder = append(builder, fmt.Sprintf("\t\t\t<enclosure url=\"%s\" length=\"%d\" type=\"%s\" />", imageUrl, photo.Size, photo.MimeType))
 
 		builder = append(builder, "\t\t</item>")
 	}
@@ -119,8 +127,9 @@ func (h *Handler) toAtom(w http.ResponseWriter) {
 	builder = append(builder, fmt.Sprintf("\t<generator>%s</generator>", generatorString))
 
 	for _, photo := range h.photos {
+		imageUrl := fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.FullFileName)
 		builder = append(builder, "\t<entry>")
-		builder = append(builder, fmt.Sprintf("\t\t<id>%s/photos/%s</id>", h.appSettings.BaseURL, photo.FullFileName))
+		builder = append(builder, fmt.Sprintf("\t\t<id>%s</id>", imageUrl))
 		if photo.PhotoInfo.Title != "" {
 			builder = append(builder, fmt.Sprintf("\t\t<title>%s</title>", html.EscapeString(photo.PhotoInfo.Title)))
 		} else {
@@ -128,7 +137,8 @@ func (h *Handler) toAtom(w http.ResponseWriter) {
 		}
 
 		builder = append(builder, fmt.Sprintf("\t\t<updated>%s</updated>", photo.Changed.Format(time.RFC3339)))
-		builder = append(builder, fmt.Sprintf("\t\t<content type=\"html\">%s</content>", h.buildDescription(photo)))
+		builder = append(builder, fmt.Sprintf("\t\t<content type=\"html\">%s</content>", h.buildDescription(photo, true)))
+		builder = append(builder, fmt.Sprintf("\t\t<link rel=\"alternate\" href=\"%s\"/>", imageUrl))
 		builder = append(builder, "\t</entry>")
 	}
 
@@ -153,16 +163,35 @@ func (h *Handler) toJSON(w http.ResponseWriter) {
 	}
 
 	for _, photo := range h.photos {
+		imageUrl := fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.FullFileName)
 		title := "Photo without title"
 		if photo.PhotoInfo.Title != "" {
 			title = photo.PhotoInfo.Title
 		}
+
 		item := jsonItem{
-			Id:            fmt.Sprintf("%s/%s", h.appSettings.BaseURL, photo.FullFileName),
+			Id:            imageUrl,
 			Title:         title,
-			ContentHtml:   h.buildDescription(photo),
-			Url:           fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName),
+			ContentHtml:   h.buildDescription(photo, false),
+			Url:           imageUrl,
 			DatePublished: photo.Changed.Format(time.RFC3339),
+			Attachments: []jsonAttachment{
+				{
+					Url:      imageUrl,
+					Title:    "Full size",
+					MimeType: photo.MimeType,
+				},
+				{
+					Url:      fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.MediumFileName),
+					Title:    "Medium size",
+					MimeType: photo.MimeType,
+				},
+				{
+					Url:      fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.SmallFileName),
+					Title:    "Small size",
+					MimeType: photo.MimeType,
+				},
+			},
 		}
 		feed.Items = append(feed.Items, item)
 	}
@@ -177,21 +206,28 @@ func (h *Handler) toJSON(w http.ResponseWriter) {
 	io.WriteString(w, string(byt))
 }
 
-func (h *Handler) buildDescription(photo photo.Photo) string {
+func (h *Handler) buildDescription(photo photo.Photo, isXML bool) string {
 	descBuilder := make([]string, 0)
+	if isXML {
+		descBuilder = append(descBuilder, "<![CDATA[")
+	}
 	if photo.PhotoInfo.Title != "" {
 		descBuilder = append(descBuilder, fmt.Sprintf("<p>%s</p>", photo.PhotoInfo.Title))
 	}
 
 	if photo.PhotoInfo.AltText != "" {
-		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photos/%s\" alt=\"%s\" />", h.appSettings.BaseURL, photo.SmallFileName, photo.PhotoInfo.AltText))
+		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photo/%s\" alt=\"%s\" />", h.appSettings.BaseURL, photo.SmallFileName, photo.PhotoInfo.AltText))
 	} else {
-		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photos/%s\" />", h.appSettings.BaseURL, photo.SmallFileName))
+		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photo/%s\" />", h.appSettings.BaseURL, photo.SmallFileName))
 	}
 
 	if photo.PhotoInfo.Description != "" {
 		descBuilder = append(descBuilder, fmt.Sprintf("<p>%s</p>", photo.PhotoInfo.Description))
 	}
 
-	return html.EscapeString(strings.Join(descBuilder, ""))
+	if isXML {
+		descBuilder = append(descBuilder, "]]>")
+	}
+
+	return strings.Join(descBuilder, "")
 }

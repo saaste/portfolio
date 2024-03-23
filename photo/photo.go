@@ -1,6 +1,7 @@
 package photo
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -29,14 +30,31 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 			continue
 		}
 
+		entryInfo, err := entry.Info()
+		if err != nil {
+			if !errors.Is(err, os.ErrNotExist) {
+				return photos, fmt.Errorf("failed to get file info: %w", err)
+			}
+		}
+
 		fullPath := fmt.Sprintf("files/%s", entry.Name())
 		fileInfo, err := times.Stat(fullPath)
 		if err != nil {
 			return photos, fmt.Errorf("failed to get file info for %s", fullPath)
 		}
 
-		switch path.Ext(strings.ToLower(entry.Name())) {
+		mimeType := ""
+		fileExtension := path.Ext(strings.ToLower(entry.Name()))
+		switch fileExtension {
+		case ".jpg", ".jpeg":
+			mimeType = "image/jpeg"
+		case ".png":
+			mimeType = "image/png"
+		}
+
+		switch fileExtension {
 		case ".jpg", ".jpeg", ".png":
+
 			hasThumbnals := hasThumbnails(entry.Name())
 			if !hasThumbnals || forceThumbnails {
 				generateThumbnails(entry.Name(), settings)
@@ -47,7 +65,9 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 				MediumFileName: getMediumThumbnailFilename(entry.Name()),
 				SmallFileName:  getSmallThumbnailFilename(entry.Name()),
 				Changed:        fileInfo.ChangeTime(),
+				Size:           entryInfo.Size(),
 				PhotoInfo:      photoInfo,
+				MimeType:       mimeType,
 			})
 		case ".txt":
 			continue

@@ -10,6 +10,8 @@ type Photo struct {
 	SmallFileName  string
 	Changed        time.Time
 	PhotoInfo      PhotoInfo
+	Size           int64
+	MimeType       string
 }
 
 type PhotoInfo struct {
