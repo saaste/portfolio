@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/saaste/portfolio/photo"
 )
 
 const (
@@ -32,7 +34,7 @@ type jsonAuthor struct {
 type jsonItem struct {
 	Id            string   `json:"id"`
 	Title         string   `json:"title"`
-	ContentText   string   `json:"content_text"`
+	ContentHtml   string   `json:"content_html"`
 	Url           string   `json:"url"`
 	DatePublished string   `json:"date_published"`
 	Tags          []string `json:"tags,omitempty"`
@@ -50,7 +52,6 @@ func (h *Handler) HandleFeed(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) toRSS(w http.ResponseWriter) {
-	fmt.Println("RSS")
 	pubDate := time.Now()
 	if len(h.photos) > 0 {
 		pubDate = h.photos[0].Changed
@@ -66,18 +67,21 @@ func (h *Handler) toRSS(w http.ResponseWriter) {
 	builder = append(builder, fmt.Sprintf("\t\t<pubDate>%s</pubDate>", pubDate.Format(time.RFC1123Z)))
 	builder = append(builder, fmt.Sprintf("\t\t<lastBuildDate>%s</lastBuildDate>", pubDate.Format(time.RFC1123Z)))
 	builder = append(builder, fmt.Sprintf("\t\t<generator>%s</generator>", generatorString))
+	builder = append(builder, fmt.Sprintf("\t\t<copyright>Copyright © %s %d</copyright>", html.EscapeString(h.appSettings.Author), time.Now().Year()))
 	builder = append(builder, fmt.Sprintf(`%s<atom:link href="%s/rss.xml" rel="self" type="application/rss+xml"></atom:link>`, "\t\t", h.appSettings.BaseURL))
 
 	for _, photo := range h.photos {
 		builder = append(builder, "\t\t<item>")
 
-		builder = append(builder, fmt.Sprintf("\t\t\t<title>%s</title>", "Photo")) // TODO: Add titles to photos
-		builder = append(builder, fmt.Sprintf("\t\t\t<link>%s/photo/%s</link>", h.appSettings.BaseURL, photo.FullFileName))
-
-		if photo.AltText != "" {
-			builder = append(builder, fmt.Sprintf("\t\t\t<description>%s</description>", html.EscapeString(photo.AltText)))
+		if photo.PhotoInfo.Title != "" {
+			builder = append(builder, fmt.Sprintf("\t\t\t<title>%s</title>", photo.PhotoInfo.Title))
+		} else {
+			builder = append(builder, "\t\t\t<title>Photo without title</title>")
 		}
 
+		builder = append(builder, fmt.Sprintf("\t\t\t<link>%s/photo/%s</link>", h.appSettings.BaseURL, photo.FullFileName))
+
+		builder = append(builder, fmt.Sprintf("\t\t\t<description>%s</description>", h.buildDescription(photo)))
 		builder = append(builder, fmt.Sprintf("\t\t\t<pubDate>%s</pubDate>", photo.Changed.Format(time.RFC1123Z)))
 		builder = append(builder, fmt.Sprintf("\t\t\t<guid>%s/photo/%s</guid>", h.appSettings.BaseURL, photo.FullFileName))
 
@@ -117,9 +121,14 @@ func (h *Handler) toAtom(w http.ResponseWriter) {
 	for _, photo := range h.photos {
 		builder = append(builder, "\t<entry>")
 		builder = append(builder, fmt.Sprintf("\t\t<id>%s/photos/%s</id>", h.appSettings.BaseURL, photo.FullFileName))
-		builder = append(builder, fmt.Sprintf("\t\t<title>%s</title>", html.EscapeString(photo.AltText)))
+		if photo.PhotoInfo.Title != "" {
+			builder = append(builder, fmt.Sprintf("\t\t<title>%s</title>", html.EscapeString(photo.PhotoInfo.Title)))
+		} else {
+			builder = append(builder, "\t\t<title>Photo without title</title>")
+		}
+
 		builder = append(builder, fmt.Sprintf("\t\t<updated>%s</updated>", photo.Changed.Format(time.RFC3339)))
-		builder = append(builder, fmt.Sprintf("\t\t<content>%s</content>", html.EscapeString("FIX THIS"))) // TODO add
+		builder = append(builder, fmt.Sprintf("\t\t<content type=\"html\">%s</content>", h.buildDescription(photo)))
 		builder = append(builder, "\t</entry>")
 	}
 
@@ -144,10 +153,14 @@ func (h *Handler) toJSON(w http.ResponseWriter) {
 	}
 
 	for _, photo := range h.photos {
+		title := "Photo without title"
+		if photo.PhotoInfo.Title != "" {
+			title = photo.PhotoInfo.Title
+		}
 		item := jsonItem{
 			Id:            fmt.Sprintf("%s/%s", h.appSettings.BaseURL, photo.FullFileName),
-			Title:         "FIX ME", // TODO Add
-			ContentText:   photo.AltText,
+			Title:         title,
+			ContentHtml:   h.buildDescription(photo),
 			Url:           fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName),
 			DatePublished: photo.Changed.Format(time.RFC3339),
 		}
@@ -162,4 +175,23 @@ func (h *Handler) toJSON(w http.ResponseWriter) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, string(byt))
+}
+
+func (h *Handler) buildDescription(photo photo.Photo) string {
+	descBuilder := make([]string, 0)
+	if photo.PhotoInfo.Title != "" {
+		descBuilder = append(descBuilder, fmt.Sprintf("<p>%s</p>", photo.PhotoInfo.Title))
+	}
+
+	if photo.PhotoInfo.AltText != "" {
+		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photos/%s\" alt=\"%s\" />", h.appSettings.BaseURL, photo.SmallFileName, photo.PhotoInfo.AltText))
+	} else {
+		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photos/%s\" />", h.appSettings.BaseURL, photo.SmallFileName))
+	}
+
+	if photo.PhotoInfo.Description != "" {
+		descBuilder = append(descBuilder, fmt.Sprintf("<p>%s</p>", photo.PhotoInfo.Description))
+	}
+
+	return html.EscapeString(strings.Join(descBuilder, ""))
 }
