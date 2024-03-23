@@ -69,7 +69,7 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 				PhotoInfo:      photoInfo,
 				MimeType:       mimeType,
 			})
-		case ".txt":
+		case ".txt", ".yaml":
 			continue
 		default:
 			log.Printf("WARNING: unsupported file type: %s\n", entry.Name())
@@ -95,7 +95,7 @@ func getPhotoInfo(photoFullPath string) PhotoInfo {
 
 	data, err := os.ReadFile(infoFile)
 	if err != nil {
-		log.Printf("WARNING: failed to read info file %s: %v", infoFile, err)
+		log.Printf("WARNING: failed to read info file: %v", err)
 		return photoInfo
 	}
 
