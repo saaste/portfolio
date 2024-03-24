@@ -17,7 +17,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func pollChanges(handler *handlers.Handler, appSettings *settings.AppSettings) {
+func pollChanges(handler *handlers.Handler, appSettings *settings.AppSettings, photoRepo *photo.PhotoRepo) {
 	tick := time.Tick(appSettings.RefreshInterval)
 	for range tick {
 		newSettings, err := settings.ReadSettings()
@@ -25,12 +25,12 @@ func pollChanges(handler *handlers.Handler, appSettings *settings.AppSettings) {
 			log.Fatalf("failed to read app settings: %s", err)
 		}
 
-		photos, err := photo.GetPhotos(newSettings, false)
+		photos, err := photoRepo.GetPhotos()
 		if err != nil {
 			log.Fatalf("failed to get photos: %s", err)
 		}
 
-		log.Println("Handler updated")
+		log.Println("INFO: Handler updated")
 		handler.Update(newSettings, photos)
 	}
 
@@ -46,14 +46,14 @@ func main() {
 		log.Fatalf("failed to read app settings: %s", err)
 	}
 
+	photoRepo := photo.NewPhotoRepo(appSettings)
+
 	if *generateThumbnails {
-		photo.GetPhotos(appSettings, true)
+		photoRepo.GenerateThumbnail()
 		os.Exit(0)
 	}
 
-	log.Printf("Photo polling initialized with %s", appSettings.RefreshInterval)
-
-	photos, err := photo.GetPhotos(appSettings, false)
+	photos, err := photoRepo.GetPhotos()
 	if err != nil {
 		log.Fatalf("failed to get photos: %s", err)
 	}
@@ -68,15 +68,17 @@ func main() {
 	r.Get("/rss.xml", handler.HandleFeed)
 	r.Get("/atom.xml", handler.HandleFeed)
 	r.Get("/feed.json", handler.HandleFeed)
+	r.Get("/photos/{filename}", handler.HandlePhoto)
 
 	handler.FileServer(r, "/photo", http.Dir("files"))
 	handler.FileServer(r, "/static", http.Dir(fmt.Sprintf("ui/%s/static", appSettings.Theme)))
 
-	go pollChanges(handler, appSettings)
+	go pollChanges(handler, appSettings, photoRepo)
+	log.Printf("INFO: Photo polling initialized with %s", appSettings.RefreshInterval)
 
 	err = http.ListenAndServe(fmt.Sprintf(":%s", *port), r)
 	if errors.Is(err, http.ErrServerClosed) {
-		log.Println("Server closed")
+		log.Println("INFO: Server closed")
 	} else if err != nil {
 		log.Fatalf("Error starting server: %v\n", err)
 	}

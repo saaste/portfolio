@@ -19,3 +19,10 @@ type PhotoInfo struct {
 	Description string `yaml:"description,omitempty"`
 	AltText     string `yaml:"altText,omitempty"`
 }
+
+type FileInfo struct {
+	Filename string
+	Size     int64
+	Changed  time.Time
+	MimeType string
+}

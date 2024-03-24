@@ -1,20 +1,24 @@
 package photo
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
-	"path"
-	"sort"
-	"strings"
 
-	"github.com/djherbis/times"
 	"github.com/saaste/portfolio/settings"
-	"gopkg.in/yaml.v3"
 )
 
-func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, error) {
+type PhotoRepo struct {
+	settings *settings.AppSettings
+}
+
+func NewPhotoRepo(settings *settings.AppSettings) *PhotoRepo {
+	return &PhotoRepo{
+		settings: settings,
+	}
+}
+
+func (p *PhotoRepo) GetPhotos() ([]Photo, error) {
 	photos := make([]Photo, 0)
 
 	entries, err := os.ReadDir("files/")
@@ -22,88 +26,49 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 		return photos, fmt.Errorf("failed to read files directory: %w", err)
 	}
 
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-		if isThumbnail(entry.Name()) {
-			continue
-		}
-
-		entryInfo, err := entry.Info()
-		if err != nil {
-			if !errors.Is(err, os.ErrNotExist) {
-				return photos, fmt.Errorf("failed to get file info: %w", err)
-			}
-		}
-
-		fullPath := fmt.Sprintf("files/%s", entry.Name())
-		fileInfo, err := times.Stat(fullPath)
-		if err != nil {
-			return photos, fmt.Errorf("failed to get file info for %s", fullPath)
-		}
-
-		mimeType := ""
-		fileExtension := path.Ext(strings.ToLower(entry.Name()))
-		switch fileExtension {
-		case ".jpg", ".jpeg":
-			mimeType = "image/jpeg"
-		case ".png":
-			mimeType = "image/png"
-		}
-
-		switch fileExtension {
-		case ".jpg", ".jpeg", ".png":
-
-			hasThumbnals := hasThumbnails(entry.Name())
-			if !hasThumbnals || forceThumbnails {
-				generateThumbnails(entry.Name(), settings)
-			}
-			photoInfo := getPhotoInfo(fullPath)
-			photos = append(photos, Photo{
-				FullFileName:   entry.Name(),
-				MediumFileName: getMediumThumbnailFilename(entry.Name()),
-				SmallFileName:  getSmallThumbnailFilename(entry.Name()),
-				Changed:        fileInfo.ChangeTime(),
-				Size:           entryInfo.Size(),
-				PhotoInfo:      photoInfo,
-				MimeType:       mimeType,
-			})
-		case ".txt", ".yaml":
-			continue
-		default:
-			log.Printf("WARNING: unsupported file type: %s\n", entry.Name())
-		}
+	originalPhotos, err := p.getOriginalPhotos(entries)
+	if err != nil {
+		return photos, fmt.Errorf("failed to get original photos: %w", err)
 	}
 
-	if !forceThumbnails {
-		log.Printf("Photo list refreshed: %d photos found\n", len(photos))
-	}
+	for _, entry := range originalPhotos {
+		fullPath := fmt.Sprintf("files/%s", entry.Filename)
 
-	sort.Slice(photos, func(i, j int) bool {
-		return photos[i].Changed.After(photos[j].Changed)
-	})
+		hasThumbnals := p.hasThumbnails(entry.Filename)
+		if !hasThumbnals {
+			p.generateThumbnails(entry.Filename, p.settings)
+		}
+		photoInfo := p.getPhotoInfo(fullPath)
+		photos = append(photos, Photo{
+			FullFileName:   entry.Filename,
+			MediumFileName: p.getMediumThumbnailFilename(entry.Filename),
+			SmallFileName:  p.getSmallThumbnailFilename(entry.Filename),
+			Changed:        entry.Changed,
+			Size:           entry.Size,
+			PhotoInfo:      photoInfo,
+			MimeType:       entry.MimeType,
+		})
+	}
 
 	return photos, nil
 }
 
-func getPhotoInfo(photoFullPath string) PhotoInfo {
-	photoInfo := PhotoInfo{}
-
-	photoExt := path.Ext(photoFullPath)
-	infoFile := strings.Replace(photoFullPath, photoExt, ".yaml", -1)
-
-	data, err := os.ReadFile(infoFile)
+func (p *PhotoRepo) GenerateThumbnail() error {
+	log.Printf("INFO: Starting thumbnail generation\n")
+	entries, err := os.ReadDir("files/")
 	if err != nil {
-		log.Printf("WARNING: failed to read info file: %v", err)
-		return photoInfo
+		return fmt.Errorf("failed to read files directory: %w", err)
 	}
 
-	if err := yaml.Unmarshal(data, &photoInfo); err != nil {
-		log.Printf("ERROR: failed to unmarshal info file %s: %v", infoFile, err)
-		return photoInfo
+	originalPhotos, err := p.getOriginalPhotos(entries)
+	if err != nil {
+		return fmt.Errorf("failed to get original photos: %w", err)
 	}
 
-	return photoInfo
+	for _, entry := range originalPhotos {
+		p.generateThumbnails(entry.Filename, p.settings)
+	}
 
+	log.Printf("INFO: Thumbnails generated for %d photos\n", len(originalPhotos))
+	return nil
 }
