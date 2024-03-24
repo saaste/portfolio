@@ -4,8 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>{{ .Title }}: {{ template "title" . }}</title>
-    <link rel="stylesheet" href="/static/reset.css" />
-    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="/static/styles.css" />
     <link rel="stylesheet" href="/static/custom.css" />
     <link rel="alternate" type="application/rss+xml" title="RSS feed" href="/atom.xml" />
     <link rel="alternate" type="application/atom+xml" title="Atom feed" href="/atom.xml" />
@@ -20,16 +19,17 @@
     <script type="text/javascript" src="/static/shotcuts.js"></script>
 </head>
 <body>
-    <div id="container">
-        <nav>
-            <h1 class="title"><a href="/">{{ .Title }}</a></h1>
-            <div class="filler"></div>
-             <a href="/about" class="about">About</a>
-        </nav>
+    <div class="container">
+        <header>
+            <nav class="navigation">
+                <h1 class="page-title"><a href="/">{{ .Title }}</a></h1>
+                <a href="/about" class="navi-link">About</a>
+            </nav>
+        </header>
         
         {{ template "content" .}}
         
-        <footer id="footer">
+        <footer class="footer">
             Copyright &copy; {{ .Author }} {{ .Year }}
         </footer>
     </div>

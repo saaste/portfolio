@@ -1,7 +1,7 @@
 {{ define "title" }}{{ .Photo.Current.PhotoInfo.Title }}{{ end }} <!-- TODO: improve -->
 {{ define "content" }}
 
-<section id="single-photo">
+<section class="single">
     {{ if .Photo.Previous }}
         <a href="/photos/{{ .Photo.Previous.FullFileName }}" class="previous">&#129092;</a>
     {{ else }}
@@ -9,15 +9,15 @@
     {{ end }}
 
     {{ with .Photo.Current }}
-        <div class="photo">
+        <div class="single-photo">
             {{ if .PhotoInfo.Title }}
-                <h2>{{ .PhotoInfo.Title }}</h2>
+                <h2 class="single-photo-title">{{ .PhotoInfo.Title }}</h2>
             {{ end }}
 
-            <img src="/photo/{{ .FullFileName }}" {{ if .PhotoInfo.AltText }}alt="{{ .PhotoInfo.AltText }}"{{ end }} />
+            <img src="/photo/{{ .FullFileName }}" {{ if .PhotoInfo.AltText }}alt="{{ .PhotoInfo.AltText }}"{{ end }} class="single-photo-image" />
             
             {{ if .PhotoInfo.Description }}
-                <p class="description">{{ .PhotoInfo.Description }}</p>
+                <p class="single-photo-description">{{ .PhotoInfo.Description }}</p>
             {{ end }}
         </div>
     {{ end }}

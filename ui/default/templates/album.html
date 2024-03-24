@@ -1,17 +1,17 @@
 {{ define "title" }}Home{{ end }}
 {{ define "content" }}
 
-<section id="photos">
+<section class="album">
 {{ range .Photos }}
-    <div class="photo">
+    <div class="album-photo">
         {{ if .PhotoInfo.Title }}
-            <p class="title">{{ .PhotoInfo.Title }}</p>
+            <p class="album-photo-title">{{ .PhotoInfo.Title }}</p>
         {{ end }}
         <a href="photos/{{ .FullFileName }}">
-            <img src="photo/{{ .SmallFileName }}" srcset="photo/{{ .MediumFileName }} {{ $.MediumSize }}w" {{ if .PhotoInfo.AltText }}alt="{{ .PhotoInfo.AltText }}"{{ end }} />
+            <img src="photo/{{ .SmallFileName }}" srcset="photo/{{ .MediumFileName }} {{ $.MediumSize }}w" {{ if .PhotoInfo.AltText }}alt="{{ .PhotoInfo.AltText }}"{{ end }} class="album-photo-image" />
         </a>
         {{ if .PhotoInfo.Description }}
-            <p class="description">{{ .PhotoInfo.Description }}</p>
+            <p class="album-photo-description">{{ .PhotoInfo.Description }}</p>
         {{ end }}
     </div>
 {{ end}}

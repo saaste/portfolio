@@ -1,0 +1,217 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+* {
+  box-sizing: border-box;
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+body {
+  line-height: 1;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+blockquote, q {
+  quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: "";
+  content: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+:root {
+  --text-color: #b9b9b9;
+  --background-color: #0a0a0a;
+  --link-color: #2b87ab;
+  --link-shadow-color: rgba(43, 135, 171, 0.6666666667);
+  --header-background-color: #1f1f1f;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --text-color: #1f1f1f;
+    --background-color: #fff;
+    --link-color: #2b87ab;
+    --link-shadow-color: rgba(30, 82, 103, 0.5019607843);
+    --header-background-color: #1f1f1f;
+  }
+}
+body {
+  color: var(--text-color);
+  background: var(--background-color);
+  font-family: "Montserrat", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+  line-height: 1.5rem;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+a:hover {
+  text-shadow: 0px 0px 5px var(--link-shadow-color);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.navigation {
+  display: flex;
+  align-items: baseline;
+  background: var(--header-background-color);
+  padding: 1rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  flex-grow: 1;
+}
+
+.navi-link {
+  text-transform: uppercase;
+}
+
+.album {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.album-photo {
+  height: 300px;
+  position: relative;
+  flex-grow: 1;
+}
+.album-photo:hover .album-photo-title, .album-photo:hover .album-photo-description {
+  opacity: 100%;
+}
+.album-photo:hover .album-photo-image {
+  opacity: 70%;
+}
+
+.album-photo-image {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+  opacity: 100%;
+  transition: 0.5s;
+}
+
+.album-photo-title, .album-photo-description {
+  position: absolute;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  line-height: 1.5rem;
+  opacity: 0%;
+  transition: 0.5s;
+}
+
+.album-photo-title {
+  top: 0;
+  z-index: 1;
+}
+
+.album-photo-description {
+  bottom: 0;
+}
+
+.single {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 1em;
+  padding: 1em 2em;
+}
+
+.single-photo {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.5rem 0 0.5rem;
+}
+
+.single-photo-title {
+  font-size: 2em;
+  text-align: center;
+}
+
+.single-photo-image {
+  width: 100%;
+  height: 100%;
+  max-width: 1500px;
+  max-height: 1000px;
+  padding-top: 1rem;
+}
+
+.previous, .next {
+  font-size: 3em;
+  text-decoration: none;
+}
+.previous.hidden, .next.hidden {
+  visibility: hidden;
+}
+
+.single-photo-description {
+  padding-top: 1em;
+  text-align: center;
+}
+
+.about {
+  font-size: 1.2rem;
+  padding: 1rem;
+}
+
+.footer {
+  padding: 1em 2em;
+  text-align: center;
+}
+
+@media only screen and (max-width: 500px) {
+  .previous, .next {
+    font-size: 2em;
+  }
+}
+
+/*# sourceMappingURL=styles.css.map */
