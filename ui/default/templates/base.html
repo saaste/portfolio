@@ -6,7 +6,7 @@
     <title>{{ .Title }}: {{ template "title" . }}</title>
     <link rel="stylesheet" href="/static/styles.css" />
     <link rel="stylesheet" href="/static/custom.css" />
-    <link rel="alternate" type="application/rss+xml" title="RSS feed" href="/atom.xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS feed" href="/rss.xml" />
     <link rel="alternate" type="application/atom+xml" title="Atom feed" href="/atom.xml" />
     <link rel="alternate" type="application/json" title="JSON feed" href="/feed.json" />
     {{ if and (ne .BaseURL "") (ne .Title "") (gt (len .Photos) 0) }}
@@ -16,7 +16,7 @@
     <meta property="og:url" content="{{ .BaseURL }}" />
     <meta property="og:image" content="{{ .BaseURL }}/photo/{{ (index .Photos 0).MediumFileName }}" />
     {{ end }}
-    <script type="text/javascript" src="/static/shotcuts.js"></script>
+    <script type="text/javascript" src="/static/shortcuts.js"></script>
 </head>
 <body>
     <div class="container">
