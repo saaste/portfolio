@@ -146,12 +146,17 @@ func (p *PhotoRepo) getPhotoInfo(photoFullPath string) PhotoInfo {
 	data, err := os.ReadFile(infoFile)
 	if err != nil {
 		log.Printf("WARNING: failed to read info file: %v", err)
+		photoInfo.Title = "Untitled"
 		return photoInfo
 	}
 
 	if err := yaml.Unmarshal(data, &photoInfo); err != nil {
 		log.Printf("ERROR: failed to unmarshal info file %s: %v", infoFile, err)
 		return photoInfo
+	}
+
+	if photoInfo.Title == "" {
+		photoInfo.Title = "Untitled"
 	}
 
 	return photoInfo

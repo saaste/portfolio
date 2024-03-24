@@ -7,7 +7,7 @@
         {{ if .PhotoInfo.Title }}
             <p class="title">{{ .PhotoInfo.Title }}</p>
         {{ end }}
-        <a href="photo/{{ .FullFileName }}" data-fslightbox="gallery">
+        <a href="photos/{{ .FullFileName }}">
             <img src="photo/{{ .SmallFileName }}" srcset="photo/{{ .MediumFileName }} {{ $.MediumSize }}w" {{ if .PhotoInfo.AltText }}alt="{{ .PhotoInfo.AltText }}"{{ end }} />
         </a>
         {{ if .PhotoInfo.Description }}

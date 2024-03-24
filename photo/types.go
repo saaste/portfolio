@@ -26,3 +26,9 @@ type FileInfo struct {
 	Changed  time.Time
 	MimeType string
 }
+
+type PhotoResult struct {
+	Previous *Photo
+	Current  *Photo
+	Next     *Photo
+}

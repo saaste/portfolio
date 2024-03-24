@@ -77,17 +77,10 @@ func (h *Handler) toRSS(w http.ResponseWriter) {
 	builder = append(builder, fmt.Sprintf(`%s<atom:link href="%s/rss.xml" rel="self" type="application/rss+xml"></atom:link>`, "\t\t", h.appSettings.BaseURL))
 
 	for _, photo := range h.photos {
-		imageUrl := fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.FullFileName)
+		imageUrl := fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName)
 		builder = append(builder, "\t\t<item>")
-
-		if photo.PhotoInfo.Title != "" {
-			builder = append(builder, fmt.Sprintf("\t\t\t<title>%s</title>", photo.PhotoInfo.Title))
-		} else {
-			builder = append(builder, "\t\t\t<title>Photo without title</title>")
-		}
-
+		builder = append(builder, fmt.Sprintf("\t\t\t<title>%s</title>", photo.PhotoInfo.Title))
 		builder = append(builder, fmt.Sprintf("\t\t\t<link>%s</link>", imageUrl))
-
 		builder = append(builder, fmt.Sprintf("\t\t\t<description>%s</description>", h.buildDescription(photo, true)))
 		builder = append(builder, fmt.Sprintf("\t\t\t<pubDate>%s</pubDate>", photo.Changed.Format(time.RFC1123Z)))
 		builder = append(builder, fmt.Sprintf("\t\t\t<guid>%s</guid>", imageUrl))
@@ -127,15 +120,10 @@ func (h *Handler) toAtom(w http.ResponseWriter) {
 	builder = append(builder, fmt.Sprintf("\t<generator>%s</generator>", generatorString))
 
 	for _, photo := range h.photos {
-		imageUrl := fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.FullFileName)
+		imageUrl := fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName)
 		builder = append(builder, "\t<entry>")
 		builder = append(builder, fmt.Sprintf("\t\t<id>%s</id>", imageUrl))
-		if photo.PhotoInfo.Title != "" {
-			builder = append(builder, fmt.Sprintf("\t\t<title>%s</title>", html.EscapeString(photo.PhotoInfo.Title)))
-		} else {
-			builder = append(builder, "\t\t<title>Photo without title</title>")
-		}
-
+		builder = append(builder, fmt.Sprintf("\t\t<title>%s</title>", html.EscapeString(photo.PhotoInfo.Title)))
 		builder = append(builder, fmt.Sprintf("\t\t<updated>%s</updated>", photo.Changed.Format(time.RFC3339)))
 		builder = append(builder, fmt.Sprintf("\t\t<content type=\"html\">%s</content>", h.buildDescription(photo, true)))
 		builder = append(builder, fmt.Sprintf("\t\t<link rel=\"alternate\" href=\"%s\"/>", imageUrl))
@@ -163,15 +151,10 @@ func (h *Handler) toJSON(w http.ResponseWriter) {
 	}
 
 	for _, photo := range h.photos {
-		imageUrl := fmt.Sprintf("%s/photo/%s", h.appSettings.BaseURL, photo.FullFileName)
-		title := "Photo without title"
-		if photo.PhotoInfo.Title != "" {
-			title = photo.PhotoInfo.Title
-		}
-
+		imageUrl := fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName)
 		item := jsonItem{
 			Id:            imageUrl,
-			Title:         title,
+			Title:         photo.PhotoInfo.Title,
 			ContentHtml:   h.buildDescription(photo, false),
 			Url:           imageUrl,
 			DatePublished: photo.Changed.Format(time.RFC3339),

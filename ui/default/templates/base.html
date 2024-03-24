@@ -17,6 +17,7 @@
     <meta property="og:url" content="{{ .BaseURL }}" />
     <meta property="og:image" content="{{ .BaseURL }}/photo/{{ (index .Photos 0).MediumFileName }}" />
     {{ end }}
+    <script type="text/javascript" src="/static/shotcuts.js"></script>
 </head>
 <body>
     <div id="container">
@@ -32,7 +33,6 @@
             Copyright &copy; {{ .Author }} {{ .Year }}
         </footer>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.0.9/index.min.js"></script>
 </body>
 </html>
 {{ end }}

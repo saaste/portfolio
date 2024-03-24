@@ -58,7 +58,7 @@ func main() {
 		log.Fatalf("failed to get photos: %s", err)
 	}
 
-	handler := handlers.NewHandler(appSettings, photos)
+	handler := handlers.NewHandler(appSettings, photoRepo, photos)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)

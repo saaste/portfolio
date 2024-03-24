@@ -16,14 +16,14 @@ a:hover {
 
 
 #container {
-    max-width: 1200px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 nav {
     background: #1f1f1f;
     font-size: 2rem;
-    margin-bottom: 1em;
     display: flex;
     align-items: baseline;
     padding: 0.8em;
@@ -43,24 +43,23 @@ nav .about {
     display: flex;
     flex-wrap: wrap;
     gap: 1em;
-    align-items: center;
-    margin-bottom: 1em;
+    padding: 2em;
 }
 
-.photo {
+#photos .photo {
     height: 300px;
     position: relative;
     flex-grow: 1;
     transition: 0.5s;
 }
-.photo img {
+#photos .photo img {
     object-fit: cover;
     width: 100%;
     height: 100%;
     vertical-align: middle;
 }
 
-.photo .title, .photo .description {
+#photos .photo .title, #photos .photo .description {
     position: absolute;
     padding: 0.5em;
     background: #000000cc;
@@ -70,21 +69,73 @@ nav .about {
     transition: 0.5s;
 }
 
-.photo .title {
+#photos .photo .title {
     top: 0;
 }
 
-.photo .description {
+#photos .photo .description {
     bottom: 0;
 }
 
-.photo:hover {
+#photos .photo:hover {
     opacity: 80%;
 }
 
-.photo:hover .title, .photo:hover .description {
+#photos .photo:hover .title, #photos .photo:hover .description {
     opacity: 100%;
 }
+
+#single-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1em;
+    padding: 1em 2em;
+}
+
+#single-photo .photo {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+#single-photo .photo h2 {
+    font-size: 2em;
+    text-align: center;
+}
+
+#single-photo .photo img {
+    padding-top: 1em;
+    width: 100%;
+    height: 100%;
+    max-width: 1500px;
+    max-height: 1000px;
+    
+}
+
+#single-photo .previous, #single-photo .next {
+    font-size: 3em;
+    text-decoration: none;
+}
+
+#single-photo .previous.hidden, #single-photo .next.hidden {
+    visibility: hidden;
+}
+
+#single-photo .previous {
+    padding-right: 0.2em
+}
+
+#single-photo .next {
+    padding-left: 0.2em;
+}
+
+
+#single-photo .photo .description {
+    padding-top: 1em;
+    text-align: center;
+}
+
 
 #about {
     padding: 0.5em;
@@ -97,19 +148,13 @@ nav .about {
 }
 
 #footer {
-    margin: 1em;
-    padding: 1em;
-    text-align: right;
-    border-top: 1px solid #c0c0c0
+    padding: 1em 2em;
+    text-align: center;
 }
 
 @media (prefers-color-scheme: dark) {
     body {
         color: #b9b9b9;
         background: rgb(10, 10, 10);
-    }
-
-    #footer {
-        border-top: 1px solid #2c2c2c
     }
 }

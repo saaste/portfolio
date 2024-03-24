@@ -1,0 +1,32 @@
+{{ define "title" }}{{ .Photo.Current.PhotoInfo.Title }}{{ end }} <!-- TODO: improve -->
+{{ define "content" }}
+
+<section id="single-photo">
+    {{ if .Photo.Previous }}
+        <a href="/photos/{{ .Photo.Previous.FullFileName }}" class="previous">&#129092;</a>
+    {{ else }}
+        <div class="previous hidden"></div>
+    {{ end }}
+
+    {{ with .Photo.Current }}
+        <div class="photo">
+            {{ if .PhotoInfo.Title }}
+                <h2>{{ .PhotoInfo.Title }}</h2>
+            {{ end }}
+
+            <img src="/photo/{{ .FullFileName }}" {{ if .PhotoInfo.AltText }}alt="{{ .PhotoInfo.AltText }}"{{ end }} />
+            
+            {{ if .PhotoInfo.Description }}
+                <p class="description">{{ .PhotoInfo.Description }}</p>
+            {{ end }}
+        </div>
+    {{ end }}
+    
+    {{ if .Photo.Next }}
+        <a href="/photos/{{ .Photo.Next.FullFileName }}" class="next">&#129094;</a>
+    {{ else }}
+        <div class="next hidden">&#129094;</div>
+    {{ end }}
+</section>
+
+{{ end }}
