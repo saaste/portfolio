@@ -1,4 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@font-face {
+  font-family: Montserrat;
+  src: url(fonts/Montserrat-VariableFont_wght.ttf);
+}
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
@@ -61,17 +64,19 @@ table {
   --text-color: #b9b9b9;
   --background-color: #0a0a0a;
   --link-color: #2b87ab;
-  --link-shadow-color: rgba(43, 135, 171, 0.6666666667);
+  --link-shadow-color: rgba(48, 151, 192, 0.6666666667);
   --header-background-color: #1f1f1f;
+  --image-overlay-color: rgba(0, 0, 0, 0.8);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     --text-color: #1f1f1f;
     --background-color: #fff;
-    --link-color: #2b87ab;
+    --link-color: #257291;
     --link-shadow-color: rgba(30, 82, 103, 0.5019607843);
-    --header-background-color: #1f1f1f;
+    --header-background-color: #cccccc;
+    --image-overlay-color: rgba(255, 255, 255, 0.8);
   }
 }
 body {
@@ -99,7 +104,7 @@ a:hover {
   display: flex;
   align-items: baseline;
   background: var(--header-background-color);
-  padding: 1rem;
+  padding: 2rem;
 }
 
 .page-title {
@@ -127,7 +132,7 @@ a:hover {
   opacity: 100%;
 }
 .album-photo:hover .album-photo-image {
-  opacity: 70%;
+  filter: brightness(60%);
 }
 
 .album-photo-image {
@@ -135,14 +140,13 @@ a:hover {
   width: 100%;
   height: 100%;
   vertical-align: middle;
-  opacity: 100%;
   transition: 0.5s;
 }
 
 .album-photo-title, .album-photo-description {
   position: absolute;
   padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--image-overlay-color);
   width: 100%;
   line-height: 1.5rem;
   opacity: 0%;
@@ -199,8 +203,11 @@ a:hover {
 }
 
 .about {
-  font-size: 1.2rem;
-  padding: 1rem;
+  font-size: 1.5rem;
+  padding: 2rem;
+}
+.about p + p {
+  padding-top: 1rem;
 }
 
 .footer {

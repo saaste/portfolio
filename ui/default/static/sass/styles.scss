@@ -1,17 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+// @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+@font-face {
+    font-family: Montserrat;
+    src: url(fonts/Montserrat-VariableFont_wght.ttf)
+}
+
 @import "reset.scss";
 
 $dark-text-color: #b9b9b9;
 $dark-background-color: #0a0a0a;
 $dark-link-color: #2b87ab;
-$dark-link-shadow-color: #2b87abaa;
+$dark-link-shadow-color: #3097c0aa;
 $dark-header-background-color: #1f1f1f;
+$dark-image-overlay-color: #000000cc;
 
 $light-text-color: #1f1f1f;
 $light-background-color: #fff;
-$light-link-color: #2b87ab;
+$light-link-color: #257291;
 $light-link-shadow-color: #1e526780;
-$light-header-background-color: #1f1f1f;
+$light-header-background-color: #cccccc;
+$light-image-overlay-color: #ffffffcc;
+
 
 $tiny-screen: 500px;
 
@@ -21,6 +29,7 @@ $tiny-screen: 500px;
     --link-color: #{$dark-link-color};
     --link-shadow-color: #{$dark-link-shadow-color};
     --header-background-color: #{$dark-header-background-color};
+    --image-overlay-color: #{$dark-image-overlay-color};
 }
 
 @media (prefers-color-scheme: light) {
@@ -30,6 +39,7 @@ $tiny-screen: 500px;
         --link-color: #{$light-link-color};
         --link-shadow-color: #{$light-link-shadow-color};
         --header-background-color: #{$light-header-background-color};
+        --image-overlay-color: #{$light-image-overlay-color};
     }
 }
 
@@ -60,7 +70,7 @@ a {
     display: flex;
     align-items: baseline;
     background: var(--header-background-color);
-    padding: 1rem;
+    padding: 2rem;
 }
 
 .page-title {
@@ -91,7 +101,7 @@ a {
         }
 
         .album-photo-image {
-            opacity: 70%;
+            filter: brightness(60%);
         }
     }
     
@@ -102,14 +112,13 @@ a {
     width: 100%;
     height: 100%;
     vertical-align: middle;
-    opacity: 100%;
     transition: 0.5s;
 }
 
 .album-photo-title, .album-photo-description {
     position: absolute;
     padding: 0.5rem;
-    background: #000000cc;
+    background: var(--image-overlay-color);
     width: 100%;
     line-height: 1.5rem;
     opacity: 0%;
@@ -169,8 +178,12 @@ a {
 }
 
 .about {
-    font-size: 1.2rem;
-    padding: 1rem;
+    font-size: 1.5rem;
+    padding: 2rem;
+
+    & p+p {
+        padding-top: 1rem;
+    }
 }
 
 // Footer
