@@ -83,7 +83,7 @@ body {
   color: var(--text-color);
   background: var(--background-color);
   font-family: "Montserrat", Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
-  line-height: 1.5rem;
+  line-height: 1.8rem;
 }
 
 a {
@@ -203,10 +203,17 @@ a:hover {
 }
 
 .about {
+  display: flex;
+  flex-direction: column;
   font-size: 1.5rem;
   padding: 2rem;
+  align-items: center;
 }
-.about p + p {
+
+.about-content {
+  max-width: 1500px;
+}
+.about-content p + p {
   padding-top: 1rem;
 }
 
