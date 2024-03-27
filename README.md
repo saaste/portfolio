@@ -36,7 +36,9 @@ breakdown of the settings you can customize:
 | title             | Title of the portfolio
 | description       | Description used in [Open Graph](https://ogp.me/) meta tags (social media preview)
 | author            | Author of the photos
+| aboutTitle        | Title of the about page. Also used in the link text.
 | about             | Text for the `About` page. HTML tags are allowed
+| theme             | Used theme
 
 4. Optionally, you can add your own styles to `ui/static/custom.css`. You can also customize the templates in the `ui/templates` directory but keep in
 mind that these files are in the source control and can change in the future.

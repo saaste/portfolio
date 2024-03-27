@@ -19,6 +19,7 @@ type TemplateData struct {
 	Description string
 	Author      string
 	About       template.HTML
+	AboutTitle  string
 	SmallSize   int
 	MediumSize  int
 	BaseURL     string
@@ -67,6 +68,7 @@ func (h *Handler) getTemplateData() *TemplateData {
 		Description: h.appSettings.Description,
 		Author:      h.appSettings.Author,
 		About:       template.HTML(h.appSettings.About),
+		AboutTitle:  h.appSettings.AboutTitle,
 		SmallSize:   h.appSettings.SmallSize,
 		MediumSize:  h.appSettings.MediumSize,
 		BaseURL:     h.appSettings.BaseURL,

@@ -1,10 +1,11 @@
 smallSize: 200
 mediumSize: 750
-refreshInterval: 10m
 baseUrl: http://localhost
+refreshInterval: 10m
 title: Portfolio
 description: Description used in Open Graph description
 author: Your name
+aboutTitle: About
 about: >
   <p>Write something about yourself here.</p>
   <p>You can use HTML.</p>
