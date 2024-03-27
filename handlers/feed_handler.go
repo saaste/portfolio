@@ -6,6 +6,7 @@ import (
 	"html"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"strings"
 	"time"
@@ -76,7 +77,8 @@ func (h *Handler) toRSS(w http.ResponseWriter) {
 	builder = append(builder, fmt.Sprintf("\t\t<copyright>Copyright © %s %d</copyright>", html.EscapeString(h.appSettings.Author), time.Now().Year()))
 	builder = append(builder, fmt.Sprintf(`%s<atom:link href="%s/rss.xml" rel="self" type="application/rss+xml"></atom:link>`, "\t\t", h.appSettings.BaseURL))
 
-	for _, photo := range h.photos {
+	lastIndex := int(math.Min(20, float64(len(h.photos))))
+	for _, photo := range h.photos[:lastIndex] {
 		imageUrl := fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName)
 		builder = append(builder, "\t\t<item>")
 		builder = append(builder, fmt.Sprintf("\t\t\t<title>%s</title>", photo.PhotoInfo.Title))
@@ -85,7 +87,6 @@ func (h *Handler) toRSS(w http.ResponseWriter) {
 		builder = append(builder, fmt.Sprintf("\t\t\t<pubDate>%s</pubDate>", photo.Changed.Format(time.RFC1123Z)))
 		builder = append(builder, fmt.Sprintf("\t\t\t<guid>%s</guid>", imageUrl))
 		builder = append(builder, fmt.Sprintf("\t\t\t<enclosure url=\"%s\" length=\"%d\" type=\"%s\" />", imageUrl, photo.Size, photo.MimeType))
-
 		builder = append(builder, "\t\t</item>")
 	}
 
@@ -119,7 +120,8 @@ func (h *Handler) toAtom(w http.ResponseWriter) {
 	builder = append(builder, fmt.Sprintf("\t<id>%s/atom.xml</id>", h.appSettings.BaseURL))
 	builder = append(builder, fmt.Sprintf("\t<generator>%s</generator>", generatorString))
 
-	for _, photo := range h.photos {
+	lastIndex := int(math.Min(20, float64(len(h.photos))))
+	for _, photo := range h.photos[:lastIndex] {
 		imageUrl := fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName)
 		builder = append(builder, "\t<entry>")
 		builder = append(builder, fmt.Sprintf("\t\t<id>%s</id>", imageUrl))
@@ -150,7 +152,8 @@ func (h *Handler) toJSON(w http.ResponseWriter) {
 		feed.Authors = append(feed.Authors, jsonAuthor{Name: h.appSettings.Author})
 	}
 
-	for _, photo := range h.photos {
+	lastIndex := int(math.Min(20, float64(len(h.photos))))
+	for _, photo := range h.photos[:lastIndex] {
 		imageUrl := fmt.Sprintf("%s/photos/%s", h.appSettings.BaseURL, photo.FullFileName)
 		item := jsonItem{
 			Id:            imageUrl,
