@@ -19,20 +19,20 @@
     <script type="text/javascript" src="/static/shortcuts.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <nav class="navigation">
-                <h1 class="page-title"><a href="/">{{ .Title }}</a></h1>
-                <a href="/about" class="navi-link">About</a>
-            </nav>
-        </header>
-        
+    <header>
+        <nav>
+            <h1 class="page-title"><a href="/">{{ .Title }}</a></h1>
+            <a href="/about" class="navi-link">About</a>
+        </nav>
+    </header>
+
+    <main>
         {{ template "content" .}}
-        
-        <footer class="footer">
-            Copyright &copy; {{ .Author }} {{ .Year }}
-        </footer>
-    </div>
+    </main>
+    
+    <footer class="footer">
+        Copyright &copy; {{ .Author }} {{ .Year }}
+    </footer>
 </body>
 </html>
 {{ end }}

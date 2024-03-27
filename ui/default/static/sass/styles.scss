@@ -43,11 +43,55 @@ $tiny-screen: 500px;
     }
 }
 
+html {
+    height: 100%;
+}
+
 body {
     color: var(--text-color);
     background: var(--background-color);
     font-family: 'Montserrat', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     line-height: 1.8rem;
+
+    display: grid;
+    grid-template-rows: min-content auto min-content;
+    grid-template-areas:
+        "header"
+        "main"
+        "footer";
+    min-height: 100%;
+}
+
+body > header {
+    grid-area: header;
+}
+
+body > main {
+    grid-area: main;
+    display: grid;
+}
+
+body > footer {
+    grid-area: footer;
+}
+
+// Navigation
+header > nav {
+    grid-area: header;
+    display: flex;
+    align-items: baseline;
+    background: var(--header-background-color);
+    padding: 2rem;
+
+
+    .page-title {
+        font-size: 2.5rem;
+        flex-grow: 1;
+    }
+    
+    .navi-link {
+        text-transform: uppercase;
+    }
 }
 
 a {
@@ -59,28 +103,6 @@ a {
     }
 }
 
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-// Navigation
-.navigation {
-    display: flex;
-    align-items: baseline;
-    background: var(--header-background-color);
-    padding: 2rem;
-}
-
-.page-title {
-    font-size: 2.5rem;
-    flex-grow: 1;
-}
-
-.navi-link {
-    text-transform: uppercase;
-}
 
 // Album
 .album {
@@ -88,93 +110,82 @@ a {
     flex-wrap: wrap;
     gap: 1rem;
     padding: 2rem;
-}
 
-.album-photo {
-    height: 300px;
-    position: relative;
-    flex-grow: 1;
-
-    &:hover {
-        .album-photo-title, .album-photo-description {
-            opacity: 100%;
-        }
-
-        .album-photo-image {
-            filter: brightness(60%);
-        }
-    }
+    .album-photo {
+        height: 300px;
+        position: relative;
+        flex-grow: 1;
     
-}
-
-.album-photo-image {
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-    vertical-align: middle;
-    transition: 0.5s;
-}
-
-.album-photo-title, .album-photo-description {
-    position: absolute;
-    padding: 0.5rem;
-    background: var(--image-overlay-color);
-    width: 100%;
-    line-height: 1.5rem;
-    opacity: 0%;
-    transition: 0.5s;
-}
-
-.album-photo-title {
-    top: 0;
-    z-index: 1;
-}
-
-.album-photo-description {
-    bottom: 0;
+        &:hover {
+            .album-photo-title, .album-photo-description {
+                opacity: 100%;
+            }
+    
+            .album-photo-image {
+                filter: brightness(60%);
+            }
+        }
+    
+        .album-photo-image {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            vertical-align: middle;
+            transition: 0.5s;
+        }
+        
+        .album-photo-title, .album-photo-description {
+            position: absolute;
+            padding: 0.5rem;
+            background: var(--image-overlay-color);
+            width: 100%;
+            line-height: 1.5rem;
+            opacity: 0%;
+            transition: 0.5s;
+        }
+        
+        .album-photo-title {
+            top: 0;
+            z-index: 1;
+        }
+        
+        .album-photo-description {
+            bottom: 0;
+        }
+        
+    }
 }
 
 // Single photo
 .single {
+    contain: size;
+    display: grid;
+    justify-items: center;
+    align-content: start;
+ 
+    & > img {
+        max-block-size: 100%;
+        max-inline-size: 100%;
+        vertical-align: middle;
+        padding: 1rem;
+    }
+}
+
+.single-header {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-top: 1em;
-    padding: 1em 2em;
-}
+    font-size: 2rem;
+    > * {
+        padding: 1rem;
+    }
 
-.single-photo {
-    display: flex;
-    flex-direction: column;
-    padding: 0 0.5rem 0 0.5rem;
-}
-
-.single-photo-title {
-    font-size: 2em;
-    text-align: center;
-}
-
-.single-photo-image {
-    width: 100%;
-    height: 100%;
-    max-width: 1500px;
-    max-height: 1000px;
-    padding-top: 1rem;
-    
-}
-
-.previous, .next {
-    font-size: 3em;
-    text-decoration: none;
-
-    &.hidden {
+    .hidden {
         visibility: hidden;
     }
 }
 
-.single-photo-description {
-    padding-top: 1em;
-    text-align: center;
+.photo-description {
+    font-size: 1.3rem;
+    padding: 1rem;
 }
 
 .about {
@@ -196,11 +207,4 @@ a {
 .footer {
     padding: 1em 2em;
     text-align: center;
-}
-
-
-@media only screen and (max-width: $tiny-screen) {
-    .previous, .next {
-        font-size: 2em;
-    }
 }
