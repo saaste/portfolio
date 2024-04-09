@@ -201,11 +201,7 @@ func (h *Handler) buildDescription(photo photo.Photo, isXML bool) string {
 		descBuilder = append(descBuilder, fmt.Sprintf("<p>%s</p>", photo.PhotoInfo.Title))
 	}
 
-	if photo.PhotoInfo.AltText != "" {
-		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photo/%s\" alt=\"%s\" />", h.appSettings.BaseURL, photo.SmallFileName, photo.PhotoInfo.AltText))
-	} else {
-		descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photo/%s\" />", h.appSettings.BaseURL, photo.SmallFileName))
-	}
+	descBuilder = append(descBuilder, fmt.Sprintf("<img src=\"%s/photo/%s\" alt=\"%s\" />", h.appSettings.BaseURL, photo.SmallFileName, photo.PhotoInfo.AltText))
 
 	if photo.PhotoInfo.Description != "" {
 		descBuilder = append(descBuilder, fmt.Sprintf("<p>%s</p>", photo.PhotoInfo.Description))
