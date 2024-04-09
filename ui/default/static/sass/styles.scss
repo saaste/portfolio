@@ -162,10 +162,13 @@ a {
     display: grid;
     justify-items: center;
     align-content: start;
- 
+
+
     & > img {
         max-block-size: 100%;
         max-inline-size: 100%;
+        min-width: 0; // Needed for Chrome to scale the image correctly
+        min-height: 0; // Needed for Chrome to scale the image correctly
         vertical-align: middle;
         padding: 1rem;
     }
@@ -185,7 +188,7 @@ a {
 
 .photo-description {
     font-size: 1.3rem;
-    padding: 1rem;
+    padding: 1rem 4rem;
 }
 
 .about {

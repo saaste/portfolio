@@ -180,6 +180,8 @@ a:hover {
 .single > img {
   max-block-size: 100%;
   max-inline-size: 100%;
+  min-width: 0;
+  min-height: 0;
   vertical-align: middle;
   padding: 1rem;
 }
@@ -197,7 +199,7 @@ a:hover {
 
 .photo-description {
   font-size: 1.3rem;
-  padding: 1rem;
+  padding: 1rem 4rem;
 }
 
 .about {
