@@ -91,6 +91,10 @@ header > nav {
     
     .navi-link {
         text-transform: uppercase;
+
+        & + .navi-link {
+            margin-left: 1rem;
+        }
     }
 }
 

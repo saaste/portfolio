@@ -10,3 +10,5 @@ about: >
   <p>Write something about yourself here.</p>
   <p>You can use HTML.</p>
 theme: default
+jwtSecret: CHANGEME
+password: CHANGEME
