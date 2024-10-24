@@ -4,6 +4,8 @@ Minimalistic portfolio app made with [Go](https://go.dev/). If you don't want to
 
 This app is build around the file system, eliminating the need for an admin UI. It also simplifies the process of backing up and restoring your data.
 
+**NOTE** I'm planning a pretty big rewrite, because I need a few more features and the current approach is just too difficult to use. Expect things to be broken!
+
 ## Features
 - File based - no databases needed!
 - Automagic thumbnail generation
