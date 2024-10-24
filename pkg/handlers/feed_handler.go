@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/saaste/portfolio/photo"
+	"github.com/saaste/portfolio/pkg/photo"
 )
 
 const (

@@ -5,6 +5,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
+    restart: unless-stopped
     volumes:
       - ./settings.yaml:/app/settings.yaml
       - ./files:/app/files

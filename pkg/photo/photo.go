@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/saaste/portfolio/settings"
+	"github.com/saaste/portfolio/pkg/settings"
 )
 
 type PhotoRepo struct {

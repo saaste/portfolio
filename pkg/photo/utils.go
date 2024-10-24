@@ -11,7 +11,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/djherbis/times"
-	"github.com/saaste/portfolio/settings"
+	"github.com/saaste/portfolio/pkg/settings"
 	"gopkg.in/yaml.v3"
 )
 

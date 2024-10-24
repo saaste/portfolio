@@ -9,9 +9,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/saaste/portfolio/handlers"
-	"github.com/saaste/portfolio/photo"
-	"github.com/saaste/portfolio/settings"
+	"github.com/saaste/portfolio/pkg/handlers"
+	"github.com/saaste/portfolio/pkg/photo"
+	"github.com/saaste/portfolio/pkg/settings"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

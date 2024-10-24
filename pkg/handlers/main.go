@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/saaste/portfolio/photo"
-	"github.com/saaste/portfolio/settings"
+	"github.com/saaste/portfolio/pkg/photo"
+	"github.com/saaste/portfolio/pkg/settings"
 )
 
 type TemplateData struct {
