@@ -1,0 +1,61 @@
+{{ define "title" }}Settings{{ end }}
+{{ define "content" }}
+
+<section class="settings">
+    <h1>Settings</h1>
+    {{- with .Notification -}}
+    <p class="notification">{{ . }}</p>
+    {{- end -}}
+    <form method="post" action="/admin/settings">
+        <div class="input-group">
+            {{- with .Errors.Title -}}
+            <p class="error">{{ . }}</p>
+            {{- end -}}
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" value="{{ .Title }}">
+        </div>
+        <div class="input-group">
+            {{- with .Errors.Description -}}
+            <p class="error">{{ . }}</p>
+            {{- end -}}
+            <label for="description">Description</label>
+            <input type="text" name="description" id="description" value="{{ .Description }}">
+        </div>
+        <div class="input-group">
+            {{- with .Errors.Author -}}
+            <p class="error">{{ . }}</p>
+            {{- end -}}
+            <label for="author">Author</label>
+            <input type="text" name="author" id="author" value="{{ .Author}}">
+        </div>
+        <div class="input-group">
+            <label for="about_title">About Title</label>
+            <input type="text" name="about_title" id="about_title" value="{{ .AboutTitle }}">
+        </div>
+        <div class="input-group">
+            {{- with .Errors.About -}}
+            <p class="error">{{ . }}</p>
+            {{- end -}}
+            <label for="about">About</label>
+            <textarea name="about" id="about">{{ .About }}</textarea>
+        </div>
+        <div class="input-group">
+            {{- with .Errors.SmallSize -}}
+            <p class="error">{{ . }}</p>
+            {{- end -}}
+            <label for="small_size">Small image size</label>
+            <input type="number" name="small_size" id="small_size" value="{{ .SmallSize }}">
+        </div>
+        <div class="input-group">
+            {{- with .Errors.MediumSize -}}
+            <p class="error">{{ . }}</p>
+            {{- end -}}
+            <label for="medium_size">Medium image size</label>
+            <input type="number" name="medium_size" id="medium_size" value="{{ .MediumSize }}">
+        </div>
+        <div class="input-group">
+            <button type="submit">Save</button>
+        </div>
+    </form>
+</section>
+{{ end }}
