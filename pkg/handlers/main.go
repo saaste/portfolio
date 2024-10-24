@@ -27,11 +27,22 @@ type TemplateData struct {
 	BaseURL         string
 	RedirectURL     string
 	Errors          *Errors
+	Notification    string
 	IsAuthenticated bool
 }
 
 type Errors struct {
-	General string
+	General     string
+	Title       string
+	Description string
+	Author      string
+	About       string
+	SmallSize   string
+	MediumSize  string
+}
+
+func (e *Errors) HasErrors() bool {
+	return e.General != "" || e.Title != "" || e.Description != "" || e.Author != "" || e.About != "" || e.SmallSize != "" || e.MediumSize != ""
 }
 
 type Handler struct {
@@ -85,6 +96,7 @@ func (h *Handler) getTemplateData(ctx context.Context) *TemplateData {
 		BaseURL:         h.appSettings.BaseURL,
 		RedirectURL:     "/",
 		Errors:          &Errors{},
+		Notification:    "",
 		IsAuthenticated: ctx.Value(auth.AuthContextKeyIsAuthenticated) == true,
 	}
 }

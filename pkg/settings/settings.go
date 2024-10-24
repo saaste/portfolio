@@ -23,3 +23,16 @@ func ReadSettings() (*AppSettings, error) {
 
 	return &appSettings, nil
 }
+
+func SaveSetting(settings *AppSettings) error {
+	data, err := yaml.Marshal(settings)
+	if err != nil {
+		return fmt.Errorf("failed to marshal settings: %w", err)
+	}
+
+	err = os.WriteFile("settings.yaml", data, 0644)
+	if err != nil {
+		return fmt.Errorf("failed to save settings to file: %w", err)
+	}
+	return nil
+}

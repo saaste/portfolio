@@ -73,6 +73,8 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.RequiresAuthentication)
 		r.Get("/admin", handler.HandleAdmin)
+		r.Get("/admin/settings", handler.HandleSettings)
+		r.Post("/admin/settings", handler.HandleSettings)
 	})
 
 	r.Group(func(r chi.Router) {
