@@ -8,6 +8,7 @@ import (
 )
 
 func (h *Handler) HandlePhoto(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	filenameParam := chi.URLParam(r, "filename")
 	photoResult, err := h.photoRepo.GetPhoto(filenameParam)
 	if err != nil {
@@ -19,7 +20,7 @@ func (h *Handler) HandlePhoto(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := h.getTemplateData()
+	data := h.getTemplateData(ctx)
 	data.Photo = photoResult
 
 	h.parseTemplate(w, "photo.html", data)

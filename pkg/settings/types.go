@@ -13,4 +13,6 @@ type AppSettings struct {
 	About           string        `yaml:"about"`
 	AboutTitle      string        `yaml:"aboutTitle" default:"About"`
 	Theme           string        `yaml:"theme"`
+	JWTSecret       string        `yaml:"jwtSecret"`
+	Password        string        `yaml:"password"`
 }

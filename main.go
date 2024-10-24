@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/saaste/portfolio/pkg/auth"
 	"github.com/saaste/portfolio/pkg/handlers"
 	"github.com/saaste/portfolio/pkg/photo"
 	"github.com/saaste/portfolio/pkg/settings"
@@ -59,16 +60,33 @@ func main() {
 	}
 
 	handler := handlers.NewHandler(appSettings, photoRepo, photos)
+	authMiddleware := auth.NewAuthMiddleware(appSettings)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/", handler.HandleRoot)
-	r.Get("/about", handler.HandleAbout)
-	r.Get("/feed", handler.HandleFeed)
-	r.Get("/rss.xml", handler.HandleFeed)
-	r.Get("/atom.xml", handler.HandleFeed)
-	r.Get("/feed.json", handler.HandleFeed)
-	r.Get("/photos/{filename}", handler.HandlePhoto)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Logger)
+	r.Use(middleware.StripSlashes)
+	r.Use(authMiddleware.Authenticate)
+
+	r.Group(func(r chi.Router) {
+		r.Use(authMiddleware.RequiresAuthentication)
+		r.Get("/admin", handler.HandleAdmin)
+	})
+
+	r.Group(func(r chi.Router) {
+		r.Get("/", handler.HandleRoot)
+		r.Get("/about", handler.HandleAbout)
+		r.Get("/feed", handler.HandleFeed)
+		r.Get("/rss.xml", handler.HandleFeed)
+		r.Get("/atom.xml", handler.HandleFeed)
+		r.Get("/feed.json", handler.HandleFeed)
+		r.Get("/photos/{filename}", handler.HandlePhoto)
+		r.Get("/login", handler.HandleLogin)
+		r.Post("/login", handler.HandleLogin)
+		r.Get("/logout", handler.LogoutHandler)
+	})
 
 	handler.FileServer(r, "/photo", http.Dir("files"))
 	handler.FileServer(r, "/static", http.Dir(fmt.Sprintf("ui/%s/static", appSettings.Theme)))

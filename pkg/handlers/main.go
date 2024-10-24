@@ -1,34 +1,44 @@
 package handlers
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"time"
 
+	"github.com/saaste/portfolio/pkg/auth"
 	"github.com/saaste/portfolio/pkg/photo"
 	"github.com/saaste/portfolio/pkg/settings"
 )
 
 type TemplateData struct {
-	Photo       *photo.PhotoResult
-	Photos      []photo.Photo
-	Year        int
-	Title       string
-	Description string
-	Author      string
-	About       template.HTML
-	AboutTitle  string
-	SmallSize   int
-	MediumSize  int
-	BaseURL     string
+	Photo           *photo.PhotoResult
+	Photos          []photo.Photo
+	Year            int
+	Title           string
+	Description     string
+	Author          string
+	About           template.HTML
+	AboutTitle      string
+	SmallSize       int
+	MediumSize      int
+	BaseURL         string
+	RedirectURL     string
+	Errors          *Errors
+	IsAuthenticated bool
+}
+
+type Errors struct {
+	General string
 }
 
 type Handler struct {
 	appSettings *settings.AppSettings
 	photoRepo   *photo.PhotoRepo
 	photos      []photo.Photo
+	jwtParser   *auth.JwtParser
 }
 
 func NewHandler(appSettings *settings.AppSettings, photoRepo *photo.PhotoRepo, photos []photo.Photo) *Handler {
@@ -36,6 +46,7 @@ func NewHandler(appSettings *settings.AppSettings, photoRepo *photo.PhotoRepo, p
 		appSettings: appSettings,
 		photoRepo:   photoRepo,
 		photos:      photos,
+		jwtParser:   auth.NewJwtParser(appSettings),
 	}
 }
 
@@ -60,17 +71,29 @@ func (h *Handler) parseTemplate(w http.ResponseWriter, templateFile string, data
 	}
 }
 
-func (h *Handler) getTemplateData() *TemplateData {
+func (h *Handler) getTemplateData(ctx context.Context) *TemplateData {
 	return &TemplateData{
-		Photos:      h.photos,
-		Year:        time.Now().Year(),
-		Title:       h.appSettings.Title,
-		Description: h.appSettings.Description,
-		Author:      h.appSettings.Author,
-		About:       template.HTML(h.appSettings.About),
-		AboutTitle:  h.appSettings.AboutTitle,
-		SmallSize:   h.appSettings.SmallSize,
-		MediumSize:  h.appSettings.MediumSize,
-		BaseURL:     h.appSettings.BaseURL,
+		Photos:          h.photos,
+		Year:            time.Now().Year(),
+		Title:           h.appSettings.Title,
+		Description:     h.appSettings.Description,
+		Author:          h.appSettings.Author,
+		About:           template.HTML(h.appSettings.About),
+		AboutTitle:      h.appSettings.AboutTitle,
+		SmallSize:       h.appSettings.SmallSize,
+		MediumSize:      h.appSettings.MediumSize,
+		BaseURL:         h.appSettings.BaseURL,
+		RedirectURL:     "/",
+		Errors:          &Errors{},
+		IsAuthenticated: ctx.Value(auth.AuthContextKeyIsAuthenticated) == true,
 	}
+}
+
+func (h *Handler) internalServerError(w http.ResponseWriter, err error, message string) {
+	fmt.Printf("ERROR: %s: %v\n", message, err)
+	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+}
+
+func (h *Handler) notFound(w http.ResponseWriter) {
+	http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 }
