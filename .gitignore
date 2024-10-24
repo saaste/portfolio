@@ -1,3 +1,6 @@
 files/
 settings.yaml
 docker-compose.yaml
+
+ui/*
+!ui/default/

@@ -4,15 +4,21 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path"
-	"sort"
-	"strings"
 
-	"github.com/djherbis/times"
 	"github.com/saaste/portfolio/settings"
 )
 
-func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, error) {
+type PhotoRepo struct {
+	settings *settings.AppSettings
+}
+
+func NewPhotoRepo(settings *settings.AppSettings) *PhotoRepo {
+	return &PhotoRepo{
+		settings: settings,
+	}
+}
+
+func (p *PhotoRepo) GetPhotos() ([]Photo, error) {
 	photos := make([]Photo, 0)
 
 	entries, err := os.ReadDir("files/")
@@ -20,68 +26,93 @@ func GetPhotos(settings *settings.AppSettings, forceThumbnails bool) ([]Photo, e
 		return photos, fmt.Errorf("failed to read files directory: %w", err)
 	}
 
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-		if isThumbnail(entry.Name()) {
-			continue
-		}
-
-		fullPath := fmt.Sprintf("files/%s", entry.Name())
-		fileInfo, err := times.Stat(fullPath)
-		if err != nil {
-			return photos, fmt.Errorf("failed to get file info for %s", fullPath)
-		}
-
-		switch path.Ext(strings.ToLower(entry.Name())) {
-		case ".jpg", ".jpeg", ".png":
-			hasThumbnals := hasThumbnails(entry.Name())
-			if !hasThumbnals || forceThumbnails {
-				generateThumbnails(entry.Name(), settings)
-			}
-			altText := getAltText(fullPath)
-			photos = append(photos, Photo{
-				FullFileName:   entry.Name(),
-				MediumFileName: getMediumThumbnailFilename(entry.Name()),
-				SmallFileName:  getSmallThumbnailFilename(entry.Name()),
-				Changed:        fileInfo.ChangeTime(),
-				AltText:        altText,
-			})
-		case ".txt":
-			continue
-		default:
-			log.Printf("WARNING: unsupported file type: %s\n", entry.Name())
-		}
+	originalPhotos, err := p.getOriginalPhotos(entries)
+	if err != nil {
+		return photos, fmt.Errorf("failed to get original photos: %w", err)
 	}
 
-	if !forceThumbnails {
-		log.Printf("Photo list refreshed: %d photos found\n", len(photos))
-	}
+	for _, entry := range originalPhotos {
+		fullPath := fmt.Sprintf("files/%s", entry.Filename)
 
-	sort.Slice(photos, func(i, j int) bool {
-		return photos[i].Changed.After(photos[j].Changed)
-	})
+		hasThumbnals := p.hasThumbnails(entry.Filename)
+		if !hasThumbnals {
+			p.generateThumbnails(entry.Filename, p.settings)
+		}
+		photoInfo := p.getPhotoInfo(fullPath)
+		photos = append(photos, Photo{
+			FullFileName:   entry.Filename,
+			MediumFileName: p.getMediumThumbnailFilename(entry.Filename),
+			SmallFileName:  p.getSmallThumbnailFilename(entry.Filename),
+			Changed:        entry.Changed,
+			Size:           entry.Size,
+			PhotoInfo:      photoInfo,
+			MimeType:       entry.MimeType,
+		})
+	}
 
 	return photos, nil
 }
 
-func getAltText(photoFullPath string) string {
-	photoExt := path.Ext(photoFullPath)
-	altFile := strings.Replace(photoFullPath, photoExt, ".txt", -1)
+func (p *PhotoRepo) GetPhoto(fileName string) (*PhotoResult, error) {
+	result := &PhotoResult{}
 
-	_, err := os.Stat(altFile)
+	entries, err := os.ReadDir("files/")
 	if err != nil {
-		log.Printf("WARNING: No alt text for %s", photoFullPath)
-		return ""
+		return nil, fmt.Errorf("failed to read files directory: %w", err)
 	}
 
-	content, err := os.ReadFile(altFile)
+	originalPhotos, err := p.getOriginalPhotos(entries)
 	if err != nil {
-		log.Printf("ERROR: failed to read alt text file %s: %v", altFile, err)
-		return ""
+		return nil, fmt.Errorf("failed to get original photos: %w", err)
 	}
 
-	return string(content)
+	for _, entry := range originalPhotos {
+		fullPath := fmt.Sprintf("files/%s", entry.Filename)
 
+		hasThumbnals := p.hasThumbnails(entry.Filename)
+		if !hasThumbnals {
+			p.generateThumbnails(entry.Filename, p.settings)
+		}
+		photoInfo := p.getPhotoInfo(fullPath)
+		photo := &Photo{
+			FullFileName:   entry.Filename,
+			MediumFileName: p.getMediumThumbnailFilename(entry.Filename),
+			SmallFileName:  p.getSmallThumbnailFilename(entry.Filename),
+			Changed:        entry.Changed,
+			Size:           entry.Size,
+			PhotoInfo:      photoInfo,
+			MimeType:       entry.MimeType,
+		}
+
+		if entry.Filename == fileName {
+			result.Current = photo
+		} else if result.Current != nil {
+			result.Next = photo
+			break
+		} else {
+			result.Previous = photo
+		}
+	}
+
+	return result, nil
+}
+
+func (p *PhotoRepo) GenerateThumbnail() error {
+	log.Printf("INFO: Starting thumbnail generation\n")
+	entries, err := os.ReadDir("files/")
+	if err != nil {
+		return fmt.Errorf("failed to read files directory: %w", err)
+	}
+
+	originalPhotos, err := p.getOriginalPhotos(entries)
+	if err != nil {
+		return fmt.Errorf("failed to get original photos: %w", err)
+	}
+
+	for _, entry := range originalPhotos {
+		p.generateThumbnails(entry.Filename, p.settings)
+	}
+
+	log.Printf("INFO: Thumbnails generated for %d photos\n", len(originalPhotos))
+	return nil
 }

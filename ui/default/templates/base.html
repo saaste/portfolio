@@ -1,0 +1,38 @@
+{{ define "base" }}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ .Title }}: {{ template "title" . }}</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/custom.css" />
+    <link rel="alternate" type="application/rss+xml" title="RSS feed" href="/rss.xml" />
+    <link rel="alternate" type="application/atom+xml" title="Atom feed" href="/atom.xml" />
+    <link rel="alternate" type="application/json" title="JSON feed" href="/feed.json" />
+    {{ if and (ne .BaseURL "") (ne .Title "") (gt (len .Photos) 0) }}
+    <meta property="og:title" content="{{ .Title }}" />
+    <meta property="og:description" content="{{ .Description }}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ .BaseURL }}" />
+    <meta property="og:image" content="{{ .BaseURL }}/photo/{{ (index .Photos 0).MediumFileName }}" />
+    {{ end }}
+    <script type="text/javascript" src="/static/shortcuts.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <h1 class="page-title"><a href="/">{{ .Title }}</a></h1>
+            <a href="/about" class="navi-link">{{ .AboutTitle }}</a>
+        </nav>
+    </header>
+
+    <main>
+        {{ template "content" .}}
+    </main>
+    
+    <footer class="footer">
+        Copyright &copy; {{ .Author }} {{ .Year }}
+    </footer>
+</body>
+</html>
+{{ end }}
